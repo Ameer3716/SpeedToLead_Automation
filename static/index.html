@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Speed-to-Lead — Live Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0B0F14;
+    --surface:#121821;
+    --surface-2:#171F29;
+    --border:#232C38;
+    --border-soft:#1A222C;
+    --text:#EDEFF2;
+    --text-muted:#8996A6;
+    --text-faint:#586372;
+    --amber:#E8A33D;
+    --amber-soft:#3A2E18;
+    --emerald:#34D399;
+    --emerald-soft:#123328;
+    --red:#EF6461;
+    --red-soft:#3A1E1E;
+    --radius:10px;
+    --radius-sm:6px;
+    --font-mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --font-sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--bg), var(--bg)) ,
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px);
+    color:var(--text);
+    font-family:var(--font-sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+  .muted{color:var(--text-muted);}
+  .faint{color:var(--text-faint);}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+    padding:16px 28px;
+    background:rgba(11,15,20,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .wordmark{
+    display:flex; align-items:baseline; gap:6px;
+    font-family:var(--font-mono); font-weight:700; letter-spacing:0.02em;
+    font-size:1.05rem;
+  }
+  .wordmark .seg-hi{color:var(--amber);}
+  .wordmark .seg-lo{color:var(--text-faint);}
+  .wordmark .slash{color:var(--text-faint); font-weight:400;}
+  .subtitle{font-size:0.72rem; color:var(--text-faint); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;}
+  .brand-block{display:flex; flex-direction:column; gap:2px;}
+
+  .header-right{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .business-tag{font-size:0.85rem; color:var(--text-muted);}
+  .business-tag b{color:var(--text); font-weight:600;}
+  .clock{font-size:0.78rem; color:var(--text-faint);}
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+    padding:5px 10px; border-radius:999px; border:1px solid var(--border);
+    color:var(--text-muted);
+  }
+  .status-dot{width:7px; height:7px; border-radius:50%; background:var(--emerald); box-shadow:0 0 0 0 rgba(52,211,153,0.6);}
+  @media (prefers-reduced-motion: no-preference){
+    .status-dot{animation:pulse-dot 2.4s ease-in-out infinite;}
+  }
+  @keyframes pulse-dot{
+    0%{box-shadow:0 0 0 0 rgba(52,211,153,0.55);}
+    70%{box-shadow:0 0 0 7px rgba(52,211,153,0);}
+    100%{box-shadow:0 0 0 0 rgba(52,211,153,0);}
+  }
+
+  .demo-badge{
+    font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase;
+    padding:5px 10px; border-radius:999px;
+    border:1px solid var(--amber-soft); color:var(--amber); background:var(--amber-soft);
+  }
+
+  .btn{
+    font-family:var(--font-sans); font-size:0.85rem; font-weight:600;
+    padding:10px 16px; border-radius:var(--radius-sm); border:1px solid transparent;
+    cursor:pointer; transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--amber); color:#1A1204;}
+  .btn-primary:hover{opacity:0.92;}
+  .btn-primary:disabled{opacity:0.55; cursor:default;}
+  .btn-ghost{background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:0.78rem; padding:6px 10px;}
+  .btn-ghost:hover{color:var(--text); border-color:var(--text-faint);}
+
+  /* ---------- layout ---------- */
+  main{max-width:1240px; margin:0 auto; padding:28px;}
+
+  .hero{
+    border:1px solid var(--border); background:var(--surface);
+    border-radius:var(--radius); padding:32px; margin-bottom:20px;
+    display:flex; flex-wrap:wrap; gap:32px; align-items:center; justify-content:space-between;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .hero-eyebrow{font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint); margin-bottom:10px;}
+  .hero-value{
+    font-family:var(--font-mono); font-weight:600; letter-spacing:-0.02em;
+    font-size:clamp(3rem, 8vw, 5.5rem); line-height:1; color:var(--text);
+  }
+  .hero-value.flash{animation:flash-value .6s ease-out;}
+  @media (prefers-reduced-motion: no-preference){
+    .hero-value.flash{animation:flash-value .6s ease-out;}
+  }
+  @keyframes flash-value{
+    0%{color:var(--emerald); text-shadow:0 0 22px rgba(52,211,153,0.55);}
+    100%{color:var(--text); text-shadow:none;}
+  }
+  .hero-sub{margin-top:8px; font-size:0.9rem; color:var(--text-muted);}
+  .hero-tagline{max-width:280px; font-size:0.85rem; color:var(--text-faint); line-height:1.5;}
+
+  .compare{display:flex; flex-direction:column; gap:6px; text-align:right;}
+  .compare-row{font-family:var(--font-mono); font-size:0.95rem;}
+  .compare-row .label{font-family:var(--font-sans); font-size:0.72rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-right:8px;}
+  .compare-industry{color:var(--text-faint); text-decoration:line-through;}
+  .compare-you{color:var(--emerald); font-weight:600;}
+  .multiplier{
+    margin-top:6px; display:inline-flex; align-self:flex-end;
+    font-family:var(--font-mono); font-weight:700; font-size:1.1rem; color:var(--amber);
+    border:1px solid var(--amber-soft); background:var(--amber-soft); padding:4px 12px; border-radius:999px;
+  }
+
+  .gauges{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px;
+  }
+  .gauge{
+    border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .gauge-label{font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px;}
+  .gauge-value{font-family:var(--font-mono); font-size:1.7rem; font-weight:600;}
+
+  .main-grid{display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start;}
+
+  .panel{
+    border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px; border-bottom:1px solid var(--border-soft);
+  }
+  .panel-title{font-size:0.82rem; font-weight:600; letter-spacing:0.02em;}
+  .panel-title .count{color:var(--text-faint); font-weight:400; margin-left:6px;}
+
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left; font-size:0.66rem; letter-spacing:0.09em; text-transform:uppercase;
+    color:var(--text-faint); font-weight:500; padding:10px 20px; border-bottom:1px solid var(--border-soft);
+  }
+  tbody td{padding:14px 20px; border-bottom:1px solid var(--border-soft); vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  .lead-name{font-weight:600; font-size:0.92rem;}
+  .lead-source{font-size:0.76rem; color:var(--text-faint); margin-top:2px;}
+
+  @media (prefers-reduced-motion: no-preference){
+    tr.row-enter{animation:row-in .5s ease-out;}
+  }
+  @keyframes row-in{
+    0%{background:var(--amber-soft); opacity:0;transform:translateY(-4px);}
+    100%{background:transparent; opacity:1; transform:translateY(0);}
+  }
+
+  .pill{
+    display:inline-block; font-size:0.7rem; font-weight:600; letter-spacing:0.03em;
+    padding:4px 10px; border-radius:999px; border:1px solid var(--border);
+  }
+  .pill-new{color:var(--text-muted); border-color:var(--border);}
+  .pill-contacted{color:var(--amber); border-color:var(--amber-soft); background:var(--amber-soft);}
+  .pill-booked{color:var(--emerald); border-color:var(--emerald-soft); background:var(--emerald-soft);}
+  .pill-lost{color:var(--red); border-color:var(--red-soft); background:var(--red-soft);}
+
+  .badge{font-family:var(--font-mono); font-size:0.82rem; font-weight:600; padding:3px 8px; border-radius:var(--radius-sm);}
+  .badge-fast{color:var(--emerald); background:var(--emerald-soft);}
+  .badge-ok{color:var(--amber); background:var(--amber-soft);}
+  .badge-slow{color:var(--red); background:var(--red-soft);}
+  .badge-pending{color:var(--text-faint); background:var(--surface-2);}
+
+  .row-actions{display:flex; gap:6px;}
+
+  .empty-state{padding:48px 24px; text-align:center; color:var(--text-faint); font-size:0.88rem;}
+  .empty-state b{color:var(--text-muted);}
+
+  /* ---------- activity feed ---------- */
+  .feed{padding:6px 0; max-height:640px; overflow-y:auto;}
+  .feed-item{padding:12px 20px; border-bottom:1px solid var(--border-soft);}
+  .feed-item:last-child{border-bottom:none;}
+  .feed-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .feed-type{font-size:0.78rem; font-weight:600;}
+  .feed-lead{font-size:0.76rem; color:var(--text-faint); margin-bottom:4px;}
+  .feed-detail{
+    font-size:0.78rem; color:var(--text-muted); font-family:var(--font-mono);
+    background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 10px; line-height:1.45;
+  }
+
+  footer{max-width:1240px; margin:8px auto 40px; padding:0 28px; font-size:0.76rem; color:var(--text-faint); text-align:center;}
+
+  /* ---------- modal ---------- */
+  dialog.modal{
+    background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:var(--radius);
+    padding:0; width:min(560px, 92vw); max-height:80vh;
+  }
+  dialog.modal::backdrop{background:rgba(6,8,11,0.7); backdrop-filter:blur(2px);}
+  .modal-head{display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--border-soft);}
+  .modal-head h3{margin:0; font-size:1rem;}
+  .modal-body{padding:20px 22px; overflow-y:auto; max-height:calc(80vh - 60px);}
+  .modal-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;}
+  .modal-grid .label{display:block; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin-bottom:6px;}
+  .section-label{font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin:18px 0 10px;}
+
+  /* ---------- toast ---------- */
+  #toast-container{position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:50;}
+  .toast{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:12px 16px; border-radius:var(--radius-sm); font-size:0.85rem;
+    opacity:0; transform:translateY(8px); transition:opacity .25s ease, transform .25s ease;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .toast.show{opacity:1; transform:translateY(0);}
+  .toast-error{border-color:var(--red-soft); color:var(--red);}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .main-grid{grid-template-columns:1fr;}
+    .gauges{grid-template-columns:repeat(2,1fr);}
+    .hero{flex-direction:column; align-items:flex-start;}
+    .compare{align-items:flex-start; text-align:left;}
+    .multiplier{align-self:flex-start;}
+    thead{display:none;}
+    table, tbody, tr, td{display:block; width:100%;}
+    tbody tr{padding:12px 20px; border-bottom:1px solid var(--border-soft);}
+    tbody td{padding:4px 0; border-bottom:none;}
+  }
+
+  :focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-block">
+    <div class="wordmark">
+      <span class="seg-hi">SPEED</span><span class="slash">/</span><span class="seg-lo">TO</span><span class="slash">/</span><span class="seg-hi">LEAD</span>
+    </div>
+    <div class="subtitle">Live Command Center</div>
+  </div>
+  <div class="header-right">
+    <span class="demo-badge" id="demo-badge" hidden>Demo mode — simulated sends</span>
+    <span class="business-tag">Built for <b id="business-name">—</b></span>
+    <span class="clock mono" id="live-clock">--:--:--</span>
+    <span class="status-pill"><span class="status-dot"></span>Listening for leads</span>
+    <button class="btn btn-primary" id="simulate-btn">Simulate new lead</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">Last response time</div>
+      <div class="hero-value mono" id="hero-value">--:--</div>
+      <div class="hero-sub" id="hero-sub">Waiting for the first lead</div>
+    </div>
+    <div class="hero-tagline">Every lead below gets texted, emailed, and logged automatically — no human touches a phone until it's time to close.</div>
+    <div class="compare">
+      <div class="compare-row"><span class="label">Industry avg</span><span class="compare-industry">47:00:00</span></div>
+      <div class="compare-row"><span class="label">This system</span><span class="compare-you mono" id="stat-avg">—</span></div>
+      <div class="multiplier"><span id="stat-multiplier">—</span>&nbsp;faster</div>
+    </div>
+  </section>
+
+  <section class="gauges">
+    <div class="gauge">
+      <div class="gauge-label">Leads · last 24h</div>
+      <div class="gauge-value" id="gauge-24h">0</div>
+    </div>
+    <div class="gauge">
+      <div class="gauge-label">Booked</div>
+      <div class="gauge-value" id="gauge-booked">0</div>
+    </div>
+    <div class="gauge">
+      <div class="gauge-label">Conversion rate</div>
+      <div class="gauge-value" id="gauge-conversion">0%</div>
+    </div>
+    <div class="gauge">
+      <div class="gauge-label">Awaiting booking</div>
+      <div class="gauge-value" id="gauge-pending">0</div>
+    </div>
+  </section>
+
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Leads<span class="count" id="leads-count"></span></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lead</th>
+            <th>Status</th>
+            <th>Arrived</th>
+            <th>Response</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="leads-body"></tbody>
+      </table>
+      <div class="empty-state" id="leads-empty">No leads yet. Click <b>Simulate new lead</b> above to watch it respond in real time.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Activity feed</div>
+      </div>
+      <div class="feed" id="activity-feed"></div>
+      <div class="empty-state" id="feed-empty">Nothing has happened yet.</div>
+    </div>
+  </div>
+
+</main>
+
+<footer id="footer-note"></footer>
+
+<dialog class="modal" id="lead-modal">
+  <div class="modal-head">
+    <h3 id="modal-title">Lead</h3>
+    <button class="btn-ghost" id="modal-close">Close</button>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+</dialog>
+
+<div id="toast-container"></div>
+
+<script>
+  const state = { config: null, leads: [], tickInterval: null, liveLeadId: null, liveLeadStart: null, knownIds: new Set() };
+  const params = new URLSearchParams(location.search);
+  const businessOverride = params.get('business');
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+  }
+
+  async function fetchJSON(url, opts){
+    const res = await fetch(url, opts);
+    if(!res.ok){
+      let detail = res.statusText;
+      try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+      throw new Error(detail);
+    }
+    return res.json();
+  }
+
+  function formatDuration(seconds){
+    if(seconds === null || seconds === undefined) return '—';
+    if(seconds < 60) return `${seconds < 10 ? seconds.toFixed(1) : Math.round(seconds)}s`;
+    const total = Math.round(seconds);
+    const h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
+    const pad = n => String(n).padStart(2,'0');
+    return h>0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+  }
+
+  function timeAgo(iso){
+    const diff = Math.floor((Date.now() - new Date(iso).getTime())/1000);
+    if(diff < 5) return 'just now';
+    if(diff < 60) return `${diff}s ago`;
+    const m = Math.floor(diff/60);
+    if(m < 60) return `${m}m ago`;
+    const h = Math.floor(m/60);
+    if(h < 24) return `${h}h ago`;
+    return `${Math.floor(h/24)}d ago`;
+  }
+
+  function prettyEventType(type){
+    const map = {
+      lead_created:'Lead received', sms_sent:'SMS sent', sms_sent_demo:'SMS sent (demo)',
+      sms_failed:'SMS failed', email_sent:'Email sent', email_sent_demo:'Email sent (demo)',
+      email_failed:'Email failed', owner_alerted:'Owner alerted', reminder_sent:'Reminder sent',
+      link_clicked:'Booking link clicked', status_changed:'Status changed'
+    };
+    return map[type] || type;
+  }
+
+  function statusPill(status){
+    const map = {New:'pill-new', Contacted:'pill-contacted', Booked:'pill-booked', Lost:'pill-lost'};
+    return `<span class="pill ${map[status]||'pill-new'}">${status}</span>`;
+  }
+
+  function responseBadge(seconds){
+    if(seconds === null || seconds === undefined) return '<span class="badge badge-pending">pending…</span>';
+    let cls = 'badge-fast';
+    if(seconds > 600) cls = 'badge-slow'; else if(seconds > 120) cls = 'badge-ok';
+    return `<span class="badge ${cls}">${formatDuration(seconds)}</span>`;
+  }
+
+  function truncate(str, n){ return (str && str.length > n) ? str.slice(0,n) + '…' : (str||''); }
+
+  async function loadConfig(){
+    state.config = await fetchJSON('/config');
+    const name = businessOverride || state.config.business_name;
+    document.getElementById('business-name').textContent = name;
+    document.title = `${name} — Speed-to-Lead Command Center`;
+    document.getElementById('demo-badge').hidden = !state.config.demo_mode;
+    document.getElementById('footer-note').textContent = state.config.demo_mode
+      ? 'Running in demo mode — messages shown here were generated and logged, not actually sent. Add live Twilio/SendGrid credentials to go live.'
+      : 'Live mode — real SMS and email are being sent from this instance.';
+  }
+
+  function stopTicker(){
+    if(state.tickInterval){ clearInterval(state.tickInterval); state.tickInterval = null; }
+    state.liveLeadId = null;
+  }
+
+  function startTicker(leadId, createdAtIso){
+    if(state.liveLeadId === leadId && state.tickInterval) return;
+    stopTicker();
+    state.liveLeadId = leadId;
+    state.liveLeadStart = new Date(createdAtIso).getTime();
+    document.getElementById('hero-sub').textContent = 'Responding…';
+    const valueEl = document.getElementById('hero-value');
+    state.tickInterval = setInterval(() => {
+      valueEl.textContent = formatDuration((Date.now() - state.liveLeadStart)/1000);
+    }, 100);
+  }
+
+  function flashHero(){
+    const el = document.getElementById('hero-value');
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+
+  function updateHero(leads){
+    const valueEl = document.getElementById('hero-value');
+    const subEl = document.getElementById('hero-sub');
+    if(!leads.length){
+      stopTicker();
+      valueEl.textContent = '--:--';
+      subEl.textContent = 'Waiting for the first lead';
+      return;
+    }
+    const latest = leads[0];
+    if(latest.status === 'New' || latest.response_time_seconds === null || latest.response_time_seconds === undefined){
+      startTicker(latest.id, latest.created_at);
+    } else {
+      const wasTicking = state.liveLeadId === latest.id;
+      stopTicker();
+      valueEl.textContent = formatDuration(latest.response_time_seconds);
+      subEl.textContent = `${latest.name} · contacted via ${latest.source}`;
+      if(wasTicking) flashHero();
+    }
+  }
+
+  function renderStats(stats){
+    document.getElementById('stat-avg').textContent = formatDuration(stats.avg_response_seconds);
+    document.getElementById('stat-multiplier').textContent = stats.speed_multiplier ? `${stats.speed_multiplier.toLocaleString()}×` : '—';
+    document.getElementById('gauge-24h').textContent = stats.leads_last_24h;
+    document.getElementById('gauge-booked').textContent = stats.booked;
+    document.getElementById('gauge-conversion').textContent = `${stats.conversion_rate}%`;
+    document.getElementById('gauge-pending').textContent = stats.pending;
+  }
+
+  function renderLeads(leads){
+    state.leads = leads;
+    const tbody = document.getElementById('leads-body');
+    const empty = document.getElementById('leads-empty');
+    document.getElementById('leads-count').textContent = leads.length ? `(${leads.length})` : '';
+    if(!leads.length){ tbody.innerHTML=''; empty.hidden=false; updateHero(leads); return; }
+    empty.hidden = true;
+
+    tbody.innerHTML = leads.map(lead => {
+      const isNew = !state.knownIds.has(lead.id);
+      return `
+        <tr data-id="${lead.id}" class="${isNew?'row-enter':''}">
+          <td><div class="lead-name">${escapeHtml(lead.name)}</div><div class="lead-source">${escapeHtml(lead.source)}</div></td>
+          <td>${statusPill(lead.status)}</td>
+          <td class="mono muted" data-ago="${lead.created_at}">${timeAgo(lead.created_at)}</td>
+          <td>${responseBadge(lead.response_time_seconds)}</td>
+          <td><div class="row-actions">
+            <button class="btn-ghost" onclick="viewLead(${lead.id})">View</button>
+            ${lead.status !== 'Booked' ? `<button class="btn-ghost" onclick="markBooked(${lead.id})">Mark booked</button>` : ''}
+          </div></td>
+        </tr>`;
+    }).join('');
+
+    leads.forEach(l => state.knownIds.add(l.id));
+    updateHero(leads);
+  }
+
+  function renderEvents(events){
+    const feed = document.getElementById('activity-feed');
+    const empty = document.getElementById('feed-empty');
+    if(!events.length){ feed.innerHTML=''; empty.hidden=false; return; }
+    empty.hidden = true;
+    feed.innerHTML = events.map(e => `
+      <div class="feed-item">
+        <div class="feed-meta"><span class="feed-type">${escapeHtml(prettyEventType(e.event_type))}</span><span class="mono faint">${timeAgo(e.created_at)}</span></div>
+        <div class="feed-lead">${escapeHtml(e.lead_name || '')}</div>
+        ${e.detail ? `<div class="feed-detail">${escapeHtml(truncate(e.detail, 160))}</div>` : ''}
+      </div>`).join('');
+  }
+
+  async function refresh(){
+    try{
+      const [leadsRes, statsRes, eventsRes] = await Promise.all([
+        fetchJSON('/leads?limit=50'),
+        fetchJSON('/stats'),
+        fetchJSON('/events?limit=25'),
+      ]);
+      renderStats(statsRes);
+      renderLeads(leadsRes.leads);
+      renderEvents(eventsRes.events);
+    } catch(e){
+      console.error('refresh failed', e);
+    }
+  }
+
+  window.markBooked = async function(id){
+    try{
+      await fetchJSON(`/leads/${id}/status`, {
+        method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status:'Booked'})
+      });
+      toast('Marked as booked');
+      await refresh();
+    } catch(e){ toast('Could not update: ' + e.message, true); }
+  };
+
+  window.viewLead = async function(id){
+    try{
+      const lead = await fetchJSON(`/leads/${id}`);
+      openLeadModal(lead);
+    } catch(e){ toast('Could not load lead: ' + e.message, true); }
+  };
+
+  function openLeadModal(lead){
+    document.getElementById('modal-title').textContent = `${lead.name} · ${lead.source}`;
+    const eventsHtml = lead.events.map(e => `
+      <div class="feed-item">
+        <div class="feed-meta"><span class="feed-type">${escapeHtml(prettyEventType(e.event_type))}</span><span class="mono faint">${timeAgo(e.created_at)}</span></div>
+        ${e.detail ? `<div class="feed-detail">${escapeHtml(e.detail)}</div>` : ''}
+      </div>`).join('');
+    document.getElementById('modal-body').innerHTML = `
+      <div class="modal-grid">
+        <div><span class="label">Status</span>${statusPill(lead.status)}</div>
+        <div><span class="label">Response time</span>${responseBadge(lead.response_time_seconds)}</div>
+        <div><span class="label">Email</span><span class="mono">${escapeHtml(lead.email || '—')}</span></div>
+        <div><span class="label">Phone</span><span class="mono">${escapeHtml(lead.phone || '—')}</span></div>
+      </div>
+      <div class="section-label">Activity</div>
+      ${eventsHtml || '<p class="muted">No activity yet.</p>'}
+    `;
+    document.getElementById('lead-modal').showModal();
+  }
+
+  function toast(message, isError){
+    const el = document.createElement('div');
+    el.className = 'toast' + (isError ? ' toast-error' : '');
+    el.textContent = message;
+    document.getElementById('toast-container').appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3500);
+  }
+
+  async function simulateLead(){
+    const btn = document.getElementById('simulate-btn');
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Sending…';
+    try{
+      const res = await fetchJSON('/simulate/new-lead', { method:'POST' });
+      toast(`New lead: ${res.lead.name} via ${res.lead.source}`);
+      await refresh();
+    } catch(e){ toast('Could not simulate lead: ' + e.message, true); }
+    finally{ btn.disabled = false; btn.textContent = original; }
+  }
+
+  function tickClock(){
+    document.getElementById('live-clock').textContent = new Date().toISOString().substr(11,8) + ' UTC';
+  }
+
+  setInterval(() => {
+    document.querySelectorAll('[data-ago]').forEach(el => { el.textContent = timeAgo(el.getAttribute('data-ago')); });
+  }, 5000);
+
+  document.getElementById('simulate-btn').addEventListener('click', simulateLead);
+  document.getElementById('modal-close').addEventListener('click', () => document.getElementById('lead-modal').close());
+
+  setInterval(tickClock, 1000);
+  tickClock();
+
+  (async function init(){
+    await loadConfig();
+    await refresh();
+    setInterval(refresh, 4000);
+  })();
+</script>
+
+</body>
+</html>
