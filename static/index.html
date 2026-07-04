@@ -1,461 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Speed-to-Lead — Live Command Center</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speed-to-Lead — Live Command Center</title>
 
-<!-- Fonts: Geist + Geist Mono - the native Vercel/shadcn pairing, sharper and more current than default Inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts: Geist + Geist Mono - the native Vercel/shadcn pairing, sharper and more current than default Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
-<!-- Tailwind CSS via CDN for standalone HTML -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        fontFamily: {
-          sans: ['Geist', 'Inter', 'sans-serif'],
-          mono: ['Geist Mono', 'Roboto Mono', 'monospace'],
-        },
-        colors: {
-          border: "hsl(var(--border))",
-          input: "hsl(var(--input))",
-          ring: "hsl(var(--ring))",
-          background: "hsl(var(--background))",
-          foreground: "hsl(var(--foreground))",
-          primary: {
-            DEFAULT: "hsl(var(--primary))",
-            foreground: "hsl(var(--primary-foreground))",
+  <!-- Tailwind CSS via CDN for standalone HTML -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Geist', 'Inter', 'sans-serif'],
+            mono: ['Geist Mono', 'Roboto Mono', 'monospace'],
           },
-          secondary: {
-            DEFAULT: "hsl(var(--secondary))",
-            foreground: "hsl(var(--secondary-foreground))",
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            destructive: {
+              DEFAULT: "hsl(var(--destructive))",
+              foreground: "hsl(var(--destructive-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            accent: {
+              DEFAULT: "hsl(var(--accent))",
+              foreground: "hsl(var(--accent-foreground))",
+            },
+            popover: {
+              DEFAULT: "hsl(var(--popover))",
+              foreground: "hsl(var(--popover-foreground))",
+            },
+            card: {
+              DEFAULT: "hsl(var(--card))",
+              foreground: "hsl(var(--card-foreground))",
+            },
           },
-          destructive: {
-            DEFAULT: "hsl(var(--destructive))",
-            foreground: "hsl(var(--destructive-foreground))",
+          borderRadius: {
+            lg: "var(--radius)",
+            md: "calc(var(--radius) - 2px)",
+            sm: "calc(var(--radius) - 4px)",
           },
-          muted: {
-            DEFAULT: "hsl(var(--muted))",
-            foreground: "hsl(var(--muted-foreground))",
-          },
-          accent: {
-            DEFAULT: "hsl(var(--accent))",
-            foreground: "hsl(var(--accent-foreground))",
-          },
-          popover: {
-            DEFAULT: "hsl(var(--popover))",
-            foreground: "hsl(var(--popover-foreground))",
-          },
-          card: {
-            DEFAULT: "hsl(var(--card))",
-            foreground: "hsl(var(--card-foreground))",
-          },
-        },
-        borderRadius: {
-          lg: "var(--radius)",
-          md: "calc(var(--radius) - 2px)",
-          sm: "calc(var(--radius) - 4px)",
-        },
-        animation: {
-          "pulse-fast": "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          animation: {
+            "pulse-fast": "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          }
         }
       }
     }
-  }
-</script>
+  </script>
 
-<style>
-  :root {
-    /* Shadcn UI Light Theme variables */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
-  }
-  
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+  <style>
+    :root {
+      /* Shadcn UI Light Theme variables */
+      --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 240 10% 3.9%;
+      --primary: 240 5.9% 10%;
+      --primary-foreground: 0 0% 98%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --ring: 240 5.9% 10%;
+      --radius: 0.5rem;
+    }
 
-  /* Modal backdrop and reset */
-  dialog.modal {
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
-    border: 1px solid hsl(var(--border));
-    border-radius: var(--radius);
-    padding: 0;
-    width: min(600px, 92vw);
-    max-height: 85vh;
-  }
-  dialog.modal::backdrop {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
-  }
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* Scrollbars */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
-</style>
+    /* Modal backdrop and reset */
+    dialog.modal {
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      padding: 0;
+      width: min(600px, 92vw);
+      max-height: 85vh;
+    }
+
+    dialog.modal::backdrop {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: hsl(var(--border));
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: hsl(var(--muted-foreground));
+    }
+  </style>
 </head>
+
 <body class="bg-background text-foreground flex flex-col">
 
-<!-- Header -->
-<header class="sticky top-0 z-30 flex h-[72px] items-center gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-  <div class="flex flex-col justify-center">
-    <div class="font-mono font-bold tracking-tight text-lg flex items-center gap-1.5">
-      <span class="text-primary">SPEED</span>
-      <span class="text-muted-foreground/50 font-normal">/</span>
-      <span class="text-muted-foreground">TO</span>
-      <span class="text-muted-foreground/50 font-normal">/</span>
-      <span class="text-primary">LEAD</span>
-    </div>
-    <div class="text-[0.7rem] text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">Live Command Center</div>
-  </div>
-  
-  <div class="ml-auto flex items-center space-x-4">
-    <span class="inline-flex items-center rounded-full border border-border bg-muted/50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground transition-colors" id="demo-badge" hidden>Demo mode</span>
-    <span class="hidden md:inline-block text-sm text-muted-foreground">Built for <b id="business-name" class="text-foreground font-semibold">—</b></span>
-    <span class="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded-md border" id="live-clock">--:--:--</span>
-    <div class="hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground bg-card shadow-sm">
-      <span class="relative flex h-2 w-2">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-      </span>
-      Listening
-    </div>
-    <button id="simulate-btn" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 shadow-sm">
-      Simulate lead
-    </button>
-  </div>
-</header>
-
-<main class="container mx-auto max-w-7xl p-6 space-y-6 flex-1">
-
-  <!-- Hero Section -->
-  <div class="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden relative">
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none"></div>
-    <div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center justify-between relative z-10">
-      <div class="flex-1 space-y-3">
-        <p class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Last response time</p>
-        <div class="flex items-baseline gap-4">
-          <h1 class="text-6xl md:text-8xl font-bold font-mono tracking-tighter" id="hero-value">--:--</h1>
-        </div>
-        <p class="text-muted-foreground font-medium text-lg" id="hero-sub">Waiting for the first lead</p>
-        <p class="text-sm text-muted-foreground/80 max-w-md mt-4 leading-relaxed">
-          Every lead below gets texted, emailed, and logged automatically — no human touches a phone until it's time to close.
-        </p>
+  <!-- Header -->
+  <header
+    class="sticky top-0 z-30 flex h-[72px] items-center gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <div class="flex flex-col justify-center">
+      <div class="font-mono font-bold tracking-tight text-lg flex items-center gap-1.5">
+        <span class="text-primary">SPEED</span>
+        <span class="text-muted-foreground/50 font-normal">/</span>
+        <span class="text-muted-foreground">TO</span>
+        <span class="text-muted-foreground/50 font-normal">/</span>
+        <span class="text-primary">LEAD</span>
       </div>
-      
-      <div class="flex flex-col gap-3 text-right bg-background/50 backdrop-blur-sm p-6 rounded-lg border">
-        <div class="flex justify-between items-center gap-6">
-          <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Industry avg</span>
-          <span class="font-mono text-muted-foreground line-through decoration-muted-foreground/50">47:00:00</span>
-        </div>
-        <div class="flex justify-between items-center gap-6">
-          <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">This system</span>
-          <span class="font-mono text-emerald-500 font-bold text-lg" id="stat-avg">—</span>
-        </div>
-        <div class="mt-3 inline-flex items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-emerald-500 shadow-inner">
-          <span class="font-mono font-bold text-xl mr-1.5" id="stat-multiplier">—</span> faster
-        </div>
+      <div class="text-[0.7rem] text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">Live Command
+        Center</div>
+    </div>
+
+    <div class="ml-auto flex items-center space-x-4">
+      <span
+        class="inline-flex items-center rounded-full border border-border bg-muted/50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground transition-colors"
+        id="demo-badge" hidden>Demo mode</span>
+      <span class="hidden md:inline-block text-sm text-muted-foreground">Built for <b id="business-name"
+          class="text-foreground font-semibold">—</b></span>
+      <span class="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded-md border"
+        id="live-clock">--:--:--</span>
+      <div
+        class="hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground bg-card shadow-sm">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-foreground"></span>
+        </span>
+        Listening
       </div>
-    </div>
-  </div>
-
-  <!-- Gauges Grid -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">Leads <span class="text-muted-foreground/50 font-normal normal-case">last 24h</span></p>
-      <p class="text-3xl font-bold font-mono text-foreground" id="gauge-24h">0</p>
-    </div>
-    <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Booked</p>
-      <p class="text-3xl font-bold font-mono text-emerald-500" id="gauge-booked">0</p>
-    </div>
-    <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Conversion rate</p>
-      <p class="text-3xl font-bold font-mono text-foreground" id="gauge-conversion">0%</p>
-    </div>
-    <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Awaiting booking</p>
-      <p class="text-3xl font-bold font-mono text-foreground" id="gauge-pending">0</p>
-    </div>
-  </div>
-
-  <!-- Main Content Grid: Leads & Feed -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Leads Table (2/3 width) -->
-    <div class="lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col h-[600px] overflow-hidden">
-      <div class="flex flex-col space-y-1 p-6 border-b bg-muted/20">
-        <h3 class="font-semibold leading-none tracking-tight flex items-center">
-          Leads Directory
-          <span class="inline-flex items-center justify-center bg-muted text-muted-foreground rounded-full text-xs font-medium px-2 py-0.5 ml-3" id="leads-count"></span>
-        </h3>
-        <p class="text-sm text-muted-foreground mt-1">Real-time status of incoming prospects.</p>
-      </div>
-      <div class="p-0 overflow-auto flex-1 relative">
-        <table class="w-full caption-bottom text-sm relative">
-          <thead class="[&_tr]:border-b sticky top-0 bg-card/95 backdrop-blur z-10 shadow-sm">
-            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Prospect</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Status</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Arrived</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Response time</th>
-              <th class="h-10 px-4 align-middle font-medium text-muted-foreground w-[150px]"></th>
-            </tr>
-          </thead>
-          <tbody class="[&_tr:last-child]:border-0" id="leads-body">
-            <!-- Dynamically populated rows -->
-          </tbody>
-        </table>
-        
-        <!-- Empty State Leads -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center bg-card text-center p-8 space-y-4" id="leads-empty" style="display: none;">
-          <div class="rounded-full bg-muted p-4 shadow-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-          </div>
-          <div class="text-sm text-muted-foreground">No leads yet. Click <strong class="text-foreground font-medium">Simulate lead</strong> to watch the automation respond.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Activity Feed -->
-    <div class="rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col h-[600px] overflow-hidden">
-      <div class="flex flex-col space-y-1 p-6 border-b bg-muted/20">
-        <h3 class="font-semibold leading-none tracking-tight flex items-center">
-          Activity Stream
-        </h3>
-        <p class="text-sm text-muted-foreground mt-1">Live automation events.</p>
-      </div>
-      <div class="p-0 overflow-auto flex-1 relative">
-        <div class="flex flex-col" id="activity-feed">
-          <!-- Dynamically populated feed -->
-        </div>
-        
-        <!-- Empty State Feed -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center bg-card text-center p-8 space-y-4" id="feed-empty" style="display: none;">
-          <div class="rounded-full bg-muted p-4 shadow-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <div class="text-sm text-muted-foreground">Nothing has happened yet.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<footer class="container mx-auto max-w-7xl px-6 py-8 mt-auto text-center text-xs text-muted-foreground/60 border-t" id="footer-note">
-</footer>
-
-<!-- Lead Detail Modal -->
-<dialog class="modal shadow-2xl" id="lead-modal">
-  <div class="flex flex-col space-y-1.5 p-6 border-b bg-muted/10">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold leading-none tracking-tight" id="modal-title">Lead</h3>
-      <button id="modal-close" class="rounded-full w-8 h-8 flex items-center justify-center opacity-70 hover:bg-muted transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      <button id="simulate-btn"
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 shadow-sm">
+        Simulate lead
       </button>
     </div>
+  </header>
+
+  <main class="container mx-auto max-w-7xl p-6 space-y-6 flex-1">
+
+    <!-- Hero Section -->
+    <div class="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden relative">
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none">
+      </div>
+      <div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center justify-between relative z-10">
+        <div class="flex-1 space-y-3">
+          <p class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Last response time</p>
+          <div class="flex items-baseline gap-4">
+            <h1 class="text-6xl md:text-8xl font-bold font-mono tracking-tighter" id="hero-value">--:--</h1>
+          </div>
+          <p class="text-muted-foreground font-medium text-lg" id="hero-sub">Waiting for the first lead</p>
+          <p class="text-sm text-muted-foreground/80 max-w-md mt-4 leading-relaxed">
+            Every lead below gets texted, emailed, and logged automatically — no human touches a phone until it's time
+            to close.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 text-right bg-background/50 backdrop-blur-sm p-6 rounded-lg border">
+          <div class="flex justify-between items-center gap-6">
+            <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Industry avg</span>
+            <span class="font-mono text-muted-foreground line-through decoration-muted-foreground/50">47:00:00</span>
+          </div>
+          <div class="flex justify-between items-center gap-6">
+            <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">This system</span>
+            <span class="font-mono text-foreground font-bold text-lg" id="stat-avg">—</span>
+          </div>
+          <div
+            class="mt-3 inline-flex items-center justify-center rounded-full border border-foreground/25 px-4 py-1.5 text-foreground">
+            <span class="font-mono font-bold text-xl mr-1.5" id="stat-multiplier">—</span> faster
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gauges Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
+        <p
+          class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+          Leads <span class="text-muted-foreground/50 font-normal normal-case">last 24h</span></p>
+        <p class="text-3xl font-bold font-mono text-foreground" id="gauge-24h">0</p>
+      </div>
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
+        <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Booked</p>
+        <p class="text-3xl font-bold font-mono text-foreground" id="gauge-booked">0</p>
+      </div>
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
+        <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Conversion rate</p>
+        <p class="text-3xl font-bold font-mono text-foreground" id="gauge-conversion">0%</p>
+      </div>
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
+        <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Awaiting booking</p>
+        <p class="text-3xl font-bold font-mono text-foreground" id="gauge-pending">0</p>
+      </div>
+    </div>
+
+    <!-- Main Content Grid: Leads & Feed -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Leads Table (2/3 width) -->
+      <div
+        class="lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col h-[600px] overflow-hidden">
+        <div class="flex flex-col space-y-1 p-6 border-b bg-muted/20">
+          <h3 class="font-semibold leading-none tracking-tight flex items-center">
+            Leads Directory
+            <span
+              class="inline-flex items-center justify-center bg-muted text-muted-foreground rounded-full text-xs font-medium px-2 py-0.5 ml-3"
+              id="leads-count"></span>
+          </h3>
+          <p class="text-sm text-muted-foreground mt-1">Real-time status of incoming prospects.</p>
+        </div>
+        <div class="p-0 overflow-auto flex-1 relative">
+          <table class="w-full caption-bottom text-sm relative">
+            <thead class="[&_tr]:border-b sticky top-0 bg-card/95 backdrop-blur z-10 shadow-sm">
+              <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                <th
+                  class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">
+                  Prospect</th>
+                <th
+                  class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">
+                  Status</th>
+                <th
+                  class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">
+                  Arrived</th>
+                <th
+                  class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">
+                  Response time</th>
+                <th class="h-10 px-4 align-middle font-medium text-muted-foreground w-[150px]"></th>
+              </tr>
+            </thead>
+            <tbody class="[&_tr:last-child]:border-0" id="leads-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+
+          <!-- Empty State Leads -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-card text-center p-8 space-y-4"
+            id="leads-empty" style="display: none;">
+            <div class="rounded-full bg-muted p-4 shadow-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-muted-foreground">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <line x1="19" x2="19" y1="8" y2="14" />
+                <line x1="22" x2="16" y1="11" y2="11" />
+              </svg>
+            </div>
+            <div class="text-sm text-muted-foreground">No leads yet. Click <strong
+                class="text-foreground font-medium">Simulate lead</strong> to watch the automation respond.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col h-[600px] overflow-hidden">
+        <div class="flex flex-col space-y-1 p-6 border-b bg-muted/20">
+          <h3 class="font-semibold leading-none tracking-tight flex items-center">
+            Activity Stream
+          </h3>
+          <p class="text-sm text-muted-foreground mt-1">Live automation events.</p>
+        </div>
+        <div class="p-0 overflow-auto flex-1 relative">
+          <div class="flex flex-col" id="activity-feed">
+            <!-- Dynamically populated feed -->
+          </div>
+
+          <!-- Empty State Feed -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-card text-center p-8 space-y-4"
+            id="feed-empty" style="display: none;">
+            <div class="rounded-full bg-muted p-4 shadow-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-muted-foreground">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </div>
+            <div class="text-sm text-muted-foreground">Nothing has happened yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="container mx-auto max-w-7xl px-6 py-8 mt-auto text-center text-xs text-muted-foreground/60 border-t"
+    id="footer-note">
+  </footer>
+
+  <!-- Lead Detail Modal -->
+  <dialog class="modal shadow-2xl" id="lead-modal">
+    <div class="flex flex-col space-y-1.5 p-6 border-b bg-muted/10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold leading-none tracking-tight" id="modal-title">Lead</h3>
+        <button id="modal-close"
+          class="rounded-full w-8 h-8 flex items-center justify-center opacity-70 hover:bg-muted transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="p-6 overflow-y-auto max-h-[calc(85vh-80px)]" id="modal-body">
+      <!-- Dynamically populated content -->
+    </div>
+  </dialog>
+
+  <!-- Toasts -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
   </div>
-  <div class="p-6 overflow-y-auto max-h-[calc(85vh-80px)]" id="modal-body">
-    <!-- Dynamically populated content -->
-  </div>
-</dialog>
 
-<!-- Toasts -->
-<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 w-full max-w-sm pointer-events-none"></div>
+  <script>
+    const state = { config: null, leads: [], tickInterval: null, liveLeadId: null, liveLeadStart: null, knownIds: new Set() };
+    const params = new URLSearchParams(location.search);
+    const businessOverride = params.get('business');
 
-<script>
-  const state = { config: null, leads: [], tickInterval: null, liveLeadId: null, liveLeadStart: null, knownIds: new Set() };
-  const params = new URLSearchParams(location.search);
-  const businessOverride = params.get('business');
-
-  function escapeHtml(str){
-    const div = document.createElement('div');
-    div.textContent = str ?? '';
-    return div.innerHTML;
-  }
-
-  async function fetchJSON(url, opts){
-    const res = await fetch(url, opts);
-    if(!res.ok){
-      let detail = res.statusText;
-      try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
-      throw new Error(detail);
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str ?? '';
+      return div.innerHTML;
     }
-    return res.json();
-  }
 
-  function formatDuration(seconds){
-    if(seconds === null || seconds === undefined) return '—';
-    if(seconds < 60) return `${seconds < 10 ? seconds.toFixed(1) : Math.round(seconds)}s`;
-    const total = Math.round(seconds);
-    const h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
-    const pad = n => String(n).padStart(2,'0');
-    return h>0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
-  }
+    async function fetchJSON(url, opts) {
+      const res = await fetch(url, opts);
+      if (!res.ok) {
+        let detail = res.statusText;
+        try { const j = await res.json(); detail = j.detail || detail; } catch (e) { }
+        throw new Error(detail);
+      }
+      return res.json();
+    }
 
-  function timeAgo(iso){
-    const diff = Math.floor((Date.now() - new Date(iso).getTime())/1000);
-    if(diff < 5) return 'just now';
-    if(diff < 60) return `${diff}s ago`;
-    const m = Math.floor(diff/60);
-    if(m < 60) return `${m}m ago`;
-    const h = Math.floor(m/60);
-    if(h < 24) return `${h}h ago`;
-    return `${Math.floor(h/24)}d ago`;
-  }
+    function formatDuration(seconds) {
+      if (seconds === null || seconds === undefined) return '—';
+      if (seconds < 60) return `${seconds < 10 ? seconds.toFixed(1) : Math.round(seconds)}s`;
+      const total = Math.round(seconds);
+      const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+      const pad = n => String(n).padStart(2, '0');
+      return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+    }
 
-  function prettyEventType(type){
-    const map = {
-      lead_created:'Lead received', sms_sent:'SMS sent', sms_sent_demo:'SMS sent (demo)',
-      sms_failed:'SMS failed', email_sent:'Email sent', email_sent_demo:'Email sent (demo)',
-      email_failed:'Email failed', owner_alerted:'Owner alerted', reminder_sent:'Reminder sent',
-      link_clicked:'Booking link clicked', status_changed:'Status changed'
-    };
-    return map[type] || type;
-  }
+    function timeAgo(iso) {
+      const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (diff < 5) return 'just now';
+      if (diff < 60) return `${diff}s ago`;
+      const m = Math.floor(diff / 60);
+      if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}h ago`;
+      return `${Math.floor(h / 24)}d ago`;
+    }
 
-  function statusPill(status){
-    const map = {
-      New: 'bg-secondary text-secondary-foreground',
-      Contacted: 'bg-primary text-primary-foreground',
-      Booked: 'bg-emerald-500/15 text-emerald-500 border-transparent',
-      Lost: 'bg-destructive/15 text-destructive border-transparent'
-    };
-    const cls = map[status] || map['New'];
-    return `<div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${cls}">${status}</div>`;
-  }
+    function prettyEventType(type) {
+      const map = {
+        lead_created: 'Lead received', sms_sent: 'SMS sent', sms_sent_demo: 'SMS sent (demo)',
+        sms_failed: 'SMS failed', email_sent: 'Email sent', email_sent_demo: 'Email sent (demo)',
+        email_failed: 'Email failed', owner_alerted: 'Owner alerted', reminder_sent: 'Reminder sent',
+        link_clicked: 'Booking link clicked', status_changed: 'Status changed'
+      };
+      return map[type] || type;
+    }
 
-  function responseBadge(seconds){
-    if(seconds === null || seconds === undefined) return '<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono bg-secondary text-secondary-foreground shadow-sm">pending…</div>';
-    // 300s = 5 minutes, the headline stat this whole product is built around.
-    const cls = seconds <= 300
-      ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20'
-      : 'bg-destructive/15 text-destructive border-destructive/20';
-    return `<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono shadow-sm ${cls}">${formatDuration(seconds)}</div>`;
-  }
+    function statusPill(status) {
+      const map = {
+        New: 'bg-secondary text-secondary-foreground',
+        Contacted: 'bg-primary text-primary-foreground',
+        Booked: 'border-foreground text-foreground',
+        Lost: 'bg-destructive/15 text-destructive border-transparent'
+      };
+      const cls = map[status] || map['New'];
+      return `<div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${cls}">${status}</div>`;
+    }
 
-  function truncate(str, n){ return (str && str.length > n) ? str.slice(0,n) + '…' : (str||''); }
+    function responseBadge(seconds) {
+      if (seconds === null || seconds === undefined) return '<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono bg-secondary text-secondary-foreground shadow-sm">pending…</div>';
+      // 300s = 5 minutes, the headline stat this whole product is built around.
+      const cls = seconds <= 300
+        ? 'border-foreground text-foreground'
+        : 'bg-destructive/15 text-destructive border-destructive/20';
+      return `<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono shadow-sm ${cls}">${formatDuration(seconds)}</div>`;
+    }
 
-  async function loadConfig(){
-    state.config = await fetchJSON('/config');
-    const name = businessOverride || state.config.business_name;
-    document.getElementById('business-name').textContent = name;
-    document.title = `${name} — Speed-to-Lead Command Center`;
-    document.getElementById('demo-badge').hidden = !state.config.demo_mode;
-    document.getElementById('footer-note').innerHTML = state.config.demo_mode
-      ? 'Running in <strong>demo mode</strong> — messages shown here were generated and logged, not actually sent. Add live Twilio/SendGrid credentials to go live.'
-      : '<strong>Live mode</strong> — real SMS and email are being sent from this instance.';
-  }
+    function truncate(str, n) { return (str && str.length > n) ? str.slice(0, n) + '…' : (str || ''); }
 
-  function stopTicker(){
-    if(state.tickInterval){ clearInterval(state.tickInterval); state.tickInterval = null; }
-    state.liveLeadId = null;
-  }
+    async function loadConfig() {
+      state.config = await fetchJSON('/config');
+      const name = businessOverride || state.config.business_name;
+      document.getElementById('business-name').textContent = name;
+      document.title = `${name} — Speed-to-Lead Command Center`;
+      document.getElementById('demo-badge').hidden = !state.config.demo_mode;
+      document.getElementById('footer-note').innerHTML = state.config.demo_mode
+        ? 'Running in <strong>demo mode</strong> — messages shown here were generated and logged, not actually sent. Add live Twilio/SendGrid credentials to go live.'
+        : '<strong>Live mode</strong> — real SMS and email are being sent from this instance.';
+    }
 
-  function startTicker(leadId, createdAtIso){
-    if(state.liveLeadId === leadId && state.tickInterval) return;
-    stopTicker();
-    state.liveLeadId = leadId;
-    state.liveLeadStart = new Date(createdAtIso).getTime();
-    document.getElementById('hero-sub').textContent = 'Responding…';
-    const valueEl = document.getElementById('hero-value');
-    state.tickInterval = setInterval(() => {
-      valueEl.textContent = formatDuration((Date.now() - state.liveLeadStart)/1000);
-    }, 100);
-  }
+    function stopTicker() {
+      if (state.tickInterval) { clearInterval(state.tickInterval); state.tickInterval = null; }
+      state.liveLeadId = null;
+    }
 
-  function flashHero(){
-    const el = document.getElementById('hero-value');
-    el.style.transition = 'none';
-    el.style.color = 'hsl(var(--emerald))'; // shadcn does not have emerald defined, using hardcode or primary
-    el.style.color = 'rgb(16 185 129)'; // emerald-500
-    el.style.textShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
-    requestAnimationFrame(() => {
+    function startTicker(leadId, createdAtIso) {
+      if (state.liveLeadId === leadId && state.tickInterval) return;
+      stopTicker();
+      state.liveLeadId = leadId;
+      state.liveLeadStart = new Date(createdAtIso).getTime();
+      document.getElementById('hero-sub').textContent = 'Responding…';
+      const valueEl = document.getElementById('hero-value');
+      state.tickInterval = setInterval(() => {
+        valueEl.textContent = formatDuration((Date.now() - state.liveLeadStart) / 1000);
+      }, 100);
+    }
+
+    function flashHero() {
+      const el = document.getElementById('hero-value');
+      // Monochrome theme: signal "new value landed" with a scale pop + soft shadow pulse
+      // instead of a color flash (flashing to black would be invisible on black text).
+      el.style.transition = 'none';
+      el.style.transform = 'scale(1.08)';
+      el.style.textShadow = '0 0 24px rgba(0, 0, 0, 0.3)';
       requestAnimationFrame(() => {
-        el.style.transition = 'color 0.8s ease-out, text-shadow 0.8s ease-out';
-        el.style.color = '';
-        el.style.textShadow = '';
+        requestAnimationFrame(() => {
+          el.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), text-shadow 0.8s ease-out';
+          el.style.transform = 'scale(1)';
+          el.style.textShadow = '';
+        });
       });
-    });
-  }
-
-  function updateHero(leads){
-    const valueEl = document.getElementById('hero-value');
-    const subEl = document.getElementById('hero-sub');
-    if(!leads.length){
-      stopTicker();
-      valueEl.textContent = '--:--';
-      subEl.textContent = 'Waiting for the first lead';
-      return;
     }
-    const latest = leads[0];
-    if(latest.status === 'New' || latest.response_time_seconds === null || latest.response_time_seconds === undefined){
-      startTicker(latest.id, latest.created_at);
-    } else {
-      const wasTicking = state.liveLeadId === latest.id;
-      stopTicker();
-      valueEl.textContent = formatDuration(latest.response_time_seconds);
-      subEl.innerHTML = `<span class="text-foreground font-semibold">${escapeHtml(latest.name)}</span> · contacted via ${escapeHtml(latest.source)}`;
-      if(wasTicking) flashHero();
+
+    function updateHero(leads) {
+      const valueEl = document.getElementById('hero-value');
+      const subEl = document.getElementById('hero-sub');
+      if (!leads.length) {
+        stopTicker();
+        valueEl.textContent = '--:--';
+        subEl.textContent = 'Waiting for the first lead';
+        return;
+      }
+      const latest = leads[0];
+      if (latest.status === 'New' || latest.response_time_seconds === null || latest.response_time_seconds === undefined) {
+        startTicker(latest.id, latest.created_at);
+      } else {
+        const wasTicking = state.liveLeadId === latest.id;
+        stopTicker();
+        valueEl.textContent = formatDuration(latest.response_time_seconds);
+        subEl.innerHTML = `<span class="text-foreground font-semibold">${escapeHtml(latest.name)}</span> · contacted via ${escapeHtml(latest.source)}`;
+        if (wasTicking) flashHero();
+      }
     }
-  }
 
-  function renderStats(stats){
-    document.getElementById('stat-avg').textContent = formatDuration(stats.avg_response_seconds);
-    document.getElementById('stat-multiplier').textContent = stats.speed_multiplier ? `${stats.speed_multiplier.toLocaleString()}×` : '—';
-    document.getElementById('gauge-24h').textContent = stats.leads_last_24h;
-    document.getElementById('gauge-booked').textContent = stats.booked;
-    document.getElementById('gauge-conversion').textContent = `${stats.conversion_rate}%`;
-    document.getElementById('gauge-pending').textContent = stats.pending;
-  }
-
-  function renderLeads(leads){
-    state.leads = leads;
-    const tbody = document.getElementById('leads-body');
-    const empty = document.getElementById('leads-empty');
-    document.getElementById('leads-count').textContent = leads.length ? `${leads.length}` : '0';
-    
-    if(!leads.length){ 
-      tbody.innerHTML=''; 
-      empty.style.display = 'flex'; 
-      updateHero(leads); 
-      return; 
+    function renderStats(stats) {
+      document.getElementById('stat-avg').textContent = formatDuration(stats.avg_response_seconds);
+      document.getElementById('stat-multiplier').textContent = stats.speed_multiplier ? `${stats.speed_multiplier.toLocaleString()}×` : '—';
+      document.getElementById('gauge-24h').textContent = stats.leads_last_24h;
+      document.getElementById('gauge-booked').textContent = stats.booked;
+      document.getElementById('gauge-conversion').textContent = `${stats.conversion_rate}%`;
+      document.getElementById('gauge-pending').textContent = stats.pending;
     }
-    empty.style.display = 'none';
 
-    tbody.innerHTML = leads.map(lead => {
-      const isNew = !state.knownIds.has(lead.id);
-      return `
-        <tr data-id="${lead.id}" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted ${isNew?'bg-muted/30':''}">
+    function renderLeads(leads) {
+      state.leads = leads;
+      const tbody = document.getElementById('leads-body');
+      const empty = document.getElementById('leads-empty');
+      document.getElementById('leads-count').textContent = leads.length ? `${leads.length}` : '0';
+
+      if (!leads.length) {
+        tbody.innerHTML = '';
+        empty.style.display = 'flex';
+        updateHero(leads);
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = leads.map(lead => {
+        const isNew = !state.knownIds.has(lead.id);
+        return `
+        <tr data-id="${lead.id}" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted ${isNew ? 'bg-muted/30' : ''}">
           <td class="p-4 align-middle">
             <div class="font-medium text-sm">${escapeHtml(lead.name)}</div>
             <div class="text-xs text-muted-foreground mt-0.5">${escapeHtml(lead.source)}</div>
@@ -470,22 +539,22 @@
             </div>
           </td>
         </tr>`;
-    }).join('');
+      }).join('');
 
-    leads.forEach(l => state.knownIds.add(l.id));
-    updateHero(leads);
-  }
-
-  function renderEvents(events){
-    const feed = document.getElementById('activity-feed');
-    const empty = document.getElementById('feed-empty');
-    if(!events.length){ 
-      feed.innerHTML=''; 
-      empty.style.display = 'flex'; 
-      return; 
+      leads.forEach(l => state.knownIds.add(l.id));
+      updateHero(leads);
     }
-    empty.style.display = 'none';
-    feed.innerHTML = events.map(e => `
+
+    function renderEvents(events) {
+      const feed = document.getElementById('activity-feed');
+      const empty = document.getElementById('feed-empty');
+      if (!events.length) {
+        feed.innerHTML = '';
+        empty.style.display = 'flex';
+        return;
+      }
+      empty.style.display = 'none';
+      feed.innerHTML = events.map(e => `
       <div class="flex flex-col gap-1.5 p-5 border-b last:border-0 hover:bg-muted/20 transition-colors">
         <div class="flex items-center justify-between">
           <span class="text-sm font-semibold flex items-center gap-2">
@@ -497,43 +566,43 @@
         <div class="text-sm text-muted-foreground pl-3.5">${escapeHtml(e.lead_name || '')}</div>
         ${e.detail ? `<div class="mt-2 ml-3.5 text-xs text-muted-foreground font-mono bg-muted/40 border border-border/50 rounded-md p-3 leading-relaxed break-words">${escapeHtml(truncate(e.detail, 160))}</div>` : ''}
       </div>`).join('');
-  }
-
-  async function refresh(){
-    try{
-      const [leadsRes, statsRes, eventsRes] = await Promise.all([
-        fetchJSON('/leads?limit=50'),
-        fetchJSON('/stats'),
-        fetchJSON('/events?limit=25'),
-      ]);
-      renderStats(statsRes);
-      renderLeads(leadsRes.leads);
-      renderEvents(eventsRes.events);
-    } catch(e){
-      console.error('refresh failed', e);
     }
-  }
 
-  window.markBooked = async function(id){
-    try{
-      await fetchJSON(`/leads/${id}/status`, {
-        method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status:'Booked'})
-      });
-      toast('Marked as booked');
-      await refresh();
-    } catch(e){ toast('Could not update: ' + e.message, true); }
-  };
+    async function refresh() {
+      try {
+        const [leadsRes, statsRes, eventsRes] = await Promise.all([
+          fetchJSON('/leads?limit=50'),
+          fetchJSON('/stats'),
+          fetchJSON('/events?limit=25'),
+        ]);
+        renderStats(statsRes);
+        renderLeads(leadsRes.leads);
+        renderEvents(eventsRes.events);
+      } catch (e) {
+        console.error('refresh failed', e);
+      }
+    }
 
-  window.viewLead = async function(id){
-    try{
-      const lead = await fetchJSON(`/leads/${id}`);
-      openLeadModal(lead);
-    } catch(e){ toast('Could not load lead: ' + e.message, true); }
-  };
+    window.markBooked = async function (id) {
+      try {
+        await fetchJSON(`/leads/${id}/status`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Booked' })
+        });
+        toast('Marked as booked');
+        await refresh();
+      } catch (e) { toast('Could not update: ' + e.message, true); }
+    };
 
-  function openLeadModal(lead){
-    document.getElementById('modal-title').textContent = `${lead.name} · ${lead.source}`;
-    const eventsHtml = lead.events.map(e => `
+    window.viewLead = async function (id) {
+      try {
+        const lead = await fetchJSON(`/leads/${id}`);
+        openLeadModal(lead);
+      } catch (e) { toast('Could not load lead: ' + e.message, true); }
+    };
+
+    function openLeadModal(lead) {
+      document.getElementById('modal-title').textContent = `${lead.name} · ${lead.source}`;
+      const eventsHtml = lead.events.map(e => `
       <div class="flex flex-col gap-1.5 py-4 border-b last:border-0">
         <div class="flex items-center justify-between">
           <span class="text-sm font-semibold flex items-center gap-2">
@@ -544,8 +613,8 @@
         </div>
         ${e.detail ? `<div class="mt-2 ml-3.5 text-[0.7rem] text-muted-foreground font-mono bg-muted/40 border border-border/50 rounded-md p-3 leading-relaxed break-words shadow-inner">${escapeHtml(e.detail)}</div>` : ''}
       </div>`).join('');
-      
-    document.getElementById('modal-body').innerHTML = `
+
+      document.getElementById('modal-body').innerHTML = `
       <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-8 p-5 rounded-xl bg-card border shadow-sm">
         <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Status</span>${statusPill(lead.status)}</div>
         <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Response time</span>${responseBadge(lead.response_time_seconds)}</div>
@@ -555,70 +624,71 @@
       <div class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">Activity Log</div>
       <div class="border rounded-xl bg-card px-5 shadow-sm">${eventsHtml || '<p class="text-sm text-muted-foreground py-8 text-center">No activity yet.</p>'}</div>
     `;
-    document.getElementById('lead-modal').showModal();
-  }
+      document.getElementById('lead-modal').showModal();
+    }
 
-  function toast(message, isError){
-    const el = document.createElement('div');
-    el.className = 'pointer-events-auto flex w-full rounded-lg shadow-lg border transition-all duration-300 ' + 
-      (isError ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-card text-card-foreground border-border');
-    el.innerHTML = `<div class="flex p-4 w-full items-center gap-3">
-      ${isError ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' 
-                : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'}
+    function toast(message, isError) {
+      const el = document.createElement('div');
+      el.className = 'pointer-events-auto flex w-full rounded-lg shadow-lg border transition-all duration-300 ' +
+        (isError ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-card text-card-foreground border-border');
+      el.innerHTML = `<div class="flex p-4 w-full items-center gap-3">
+      ${isError ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'}
       <p class="text-sm font-medium flex-1">${message}</p>
     </div>`;
-    
-    el.style.transform = 'translateY(16px)';
-    el.style.opacity = '0';
-    document.getElementById('toast-container').appendChild(el);
-    
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        el.style.transform = 'translateY(0)';
-        el.style.opacity = '1';
-      });
-    });
-    
-    setTimeout(() => { 
+
       el.style.transform = 'translateY(16px)';
       el.style.opacity = '0';
-      setTimeout(() => el.remove(), 300); 
-    }, 3500);
-  }
+      document.getElementById('toast-container').appendChild(el);
 
-  async function simulateLead(){
-    const btn = document.getElementById('simulate-btn');
-    btn.disabled = true;
-    const original = btn.innerHTML;
-    btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending…';
-    try{
-      const res = await fetchJSON('/simulate/new-lead', { method:'POST' });
-      toast(`New lead: ${res.lead.name} via ${res.lead.source}`);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transform = 'translateY(0)';
+          el.style.opacity = '1';
+        });
+      });
+
+      setTimeout(() => {
+        el.style.transform = 'translateY(16px)';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    async function simulateLead() {
+      const btn = document.getElementById('simulate-btn');
+      btn.disabled = true;
+      const original = btn.innerHTML;
+      btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending…';
+      try {
+        const res = await fetchJSON('/simulate/new-lead', { method: 'POST' });
+        toast(`New lead: ${res.lead.name} via ${res.lead.source}`);
+        await refresh();
+      } catch (e) { toast('Could not simulate lead: ' + e.message, true); }
+      finally { btn.disabled = false; btn.innerHTML = original; }
+    }
+
+    function tickClock() {
+      document.getElementById('live-clock').textContent = new Date().toISOString().substr(11, 8) + ' UTC';
+    }
+
+    setInterval(() => {
+      document.querySelectorAll('[data-ago]').forEach(el => { el.textContent = timeAgo(el.getAttribute('data-ago')); });
+    }, 5000);
+
+    document.getElementById('simulate-btn').addEventListener('click', simulateLead);
+    document.getElementById('modal-close').addEventListener('click', () => document.getElementById('lead-modal').close());
+
+    setInterval(tickClock, 1000);
+    tickClock();
+
+    (async function init() {
+      await loadConfig();
       await refresh();
-    } catch(e){ toast('Could not simulate lead: ' + e.message, true); }
-    finally{ btn.disabled = false; btn.innerHTML = original; }
-  }
-
-  function tickClock(){
-    document.getElementById('live-clock').textContent = new Date().toISOString().substr(11,8) + ' UTC';
-  }
-
-  setInterval(() => {
-    document.querySelectorAll('[data-ago]').forEach(el => { el.textContent = timeAgo(el.getAttribute('data-ago')); });
-  }, 5000);
-
-  document.getElementById('simulate-btn').addEventListener('click', simulateLead);
-  document.getElementById('modal-close').addEventListener('click', () => document.getElementById('lead-modal').close());
-
-  setInterval(tickClock, 1000);
-  tickClock();
-
-  (async function init(){
-    await loadConfig();
-    await refresh();
-    setInterval(refresh, 4000);
-  })();
-</script>
+      setInterval(refresh, 4000);
+    })();
+  </script>
 
 </body>
+
 </html>
