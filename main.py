@@ -16,6 +16,7 @@ import database
 import notifications
 from demo_data import random_demo_lead
 from models import LeadIn, StatusUpdate
+from seed_db import seed as seed_demo
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("speed_to_lead")
@@ -247,6 +248,20 @@ async def reset_demo_data(_auth: bool = Depends(verify_api_key)):
     before a live client call, or clearing a client's data between trials."""
     database.reset_all()
     return {"status": "success", "message": "All leads and events cleared."}
+
+
+@app.post("/admin/seed")
+async def seed_demo_data(count: int = Query(default=8, ge=1, le=50), _auth: bool = Depends(verify_api_key)):
+    """Populates the dashboard with realistic-looking fake leads spread over
+    the past 24 hours - so a client clicking an async link (no live call)
+    sees a 'lived-in' dashboard instead of an empty one. Exists because free
+    hosting tiers (Render free, etc.) wipe local files on every spin-down,
+    so there's no shell access to run a seed script directly - hit this
+    endpoint instead, any time, from anywhere: no CLI needed.
+    Runs on top of whatever's already there - call /admin/reset first if you
+    want a completely clean slate."""
+    created = seed_demo(count)
+    return {"status": "success", "leads_created": created}
 
 
 @app.get("/leads")
