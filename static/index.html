@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Speed-to-Lead — Live Command Center</title>
 
-<!-- Fonts -->
+<!-- Fonts: Geist + Geist Mono - the native Vercel/shadcn pairing, sharper and more current than default Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Tailwind CSS via CDN for standalone HTML -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -18,8 +18,8 @@
     theme: {
       extend: {
         fontFamily: {
-          sans: ['Inter', 'sans-serif'],
-          mono: ['Roboto Mono', 'monospace'],
+          sans: ['Geist', 'Inter', 'sans-serif'],
+          mono: ['Geist Mono', 'Roboto Mono', 'monospace'],
         },
         colors: {
           border: "hsl(var(--border))",
@@ -135,11 +135,11 @@
       <span class="text-muted-foreground/50 font-normal">/</span>
       <span class="text-primary">LEAD</span>
     </div>
-    <div class="text-[0.65rem] text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">Live Command Center</div>
+    <div class="text-[0.7rem] text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">Live Command Center</div>
   </div>
   
   <div class="ml-auto flex items-center space-x-4">
-    <span class="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500 transition-colors" id="demo-badge" hidden>Demo mode</span>
+    <span class="inline-flex items-center rounded-full border border-border bg-muted/50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground transition-colors" id="demo-badge" hidden>Demo mode</span>
     <span class="hidden md:inline-block text-sm text-muted-foreground">Built for <b id="business-name" class="text-foreground font-semibold">—</b></span>
     <span class="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded-md border" id="live-clock">--:--:--</span>
     <div class="hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground bg-card shadow-sm">
@@ -181,7 +181,7 @@
           <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">This system</span>
           <span class="font-mono text-emerald-500 font-bold text-lg" id="stat-avg">—</span>
         </div>
-        <div class="mt-3 inline-flex items-center justify-center rounded-full border border-amber-500/20 bg-amber-500/10 px-4 py-1.5 text-amber-500 shadow-inner">
+        <div class="mt-3 inline-flex items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-emerald-500 shadow-inner">
           <span class="font-mono font-bold text-xl mr-1.5" id="stat-multiplier">—</span> faster
         </div>
       </div>
@@ -191,19 +191,19 @@
   <!-- Gauges Grid -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">Leads <span class="text-muted-foreground/50 font-normal normal-case">last 24h</span></p>
+      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">Leads <span class="text-muted-foreground/50 font-normal normal-case">last 24h</span></p>
       <p class="text-3xl font-bold font-mono text-foreground" id="gauge-24h">0</p>
     </div>
     <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Booked</p>
+      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Booked</p>
       <p class="text-3xl font-bold font-mono text-emerald-500" id="gauge-booked">0</p>
     </div>
     <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Conversion rate</p>
+      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Conversion rate</p>
       <p class="text-3xl font-bold font-mono text-foreground" id="gauge-conversion">0%</p>
     </div>
     <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-5 flex flex-col gap-1.5 transition-all hover:shadow-md">
-      <p class="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Awaiting booking</p>
+      <p class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider">Awaiting booking</p>
       <p class="text-3xl font-bold font-mono text-foreground" id="gauge-pending">0</p>
     </div>
   </div>
@@ -223,10 +223,10 @@
         <table class="w-full caption-bottom text-sm relative">
           <thead class="[&_tr]:border-b sticky top-0 bg-card/95 backdrop-blur z-10 shadow-sm">
             <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.65rem] tracking-wider">Prospect</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.65rem] tracking-wider">Status</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.65rem] tracking-wider">Arrived</th>
-              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.65rem] tracking-wider">Response time</th>
+              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Prospect</th>
+              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Status</th>
+              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Arrived</th>
+              <th class="h-10 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[0.7rem] tracking-wider">Response time</th>
               <th class="h-10 px-4 align-middle font-medium text-muted-foreground w-[150px]"></th>
             </tr>
           </thead>
@@ -356,9 +356,10 @@
 
   function responseBadge(seconds){
     if(seconds === null || seconds === undefined) return '<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono bg-secondary text-secondary-foreground shadow-sm">pending…</div>';
-    let cls = 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20';
-    if(seconds > 600) cls = 'bg-destructive/15 text-destructive border-destructive/20'; 
-    else if(seconds > 120) cls = 'bg-amber-500/15 text-amber-500 border-amber-500/20';
+    // 300s = 5 minutes, the headline stat this whole product is built around.
+    const cls = seconds <= 300
+      ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20'
+      : 'bg-destructive/15 text-destructive border-destructive/20';
     return `<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono shadow-sm ${cls}">${formatDuration(seconds)}</div>`;
   }
 
@@ -546,12 +547,12 @@
       
     document.getElementById('modal-body').innerHTML = `
       <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-8 p-5 rounded-xl bg-card border shadow-sm">
-        <div><span class="block text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Status</span>${statusPill(lead.status)}</div>
-        <div><span class="block text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Response time</span>${responseBadge(lead.response_time_seconds)}</div>
-        <div><span class="block text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Email</span><span class="text-sm font-mono text-foreground">${escapeHtml(lead.email || '—')}</span></div>
-        <div><span class="block text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Phone</span><span class="text-sm font-mono text-foreground">${escapeHtml(lead.phone || '—')}</span></div>
+        <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Status</span>${statusPill(lead.status)}</div>
+        <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-2">Response time</span>${responseBadge(lead.response_time_seconds)}</div>
+        <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Email</span><span class="text-sm font-mono text-foreground">${escapeHtml(lead.email || '—')}</span></div>
+        <div><span class="block text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Phone</span><span class="text-sm font-mono text-foreground">${escapeHtml(lead.phone || '—')}</span></div>
       </div>
-      <div class="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">Activity Log</div>
+      <div class="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">Activity Log</div>
       <div class="border rounded-xl bg-card px-5 shadow-sm">${eventsHtml || '<p class="text-sm text-muted-foreground py-8 text-center">No activity yet.</p>'}</div>
     `;
     document.getElementById('lead-modal').showModal();
